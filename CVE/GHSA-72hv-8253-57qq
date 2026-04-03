@@ -8,6 +8,7 @@ ARTIFACT_IDS=(
 	com.fasterxml.jackson.datatype:jackson-datatype-jdk8@CROSS_DC_MANAGER_LIB_DIR
 	com.fasterxml.jackson.module:jackson-module-scala_2.13@CROSS_DC_MANAGER_LIB_DIR
 
+	com.fasterxml.jackson.core:jackson-annotations@WEBAPP_LIB_DIR
 	com.fasterxml.jackson.core:jackson-core@WEBAPP_LIB_DIR
 	com.fasterxml.jackson.core:jackson-databind@WEBAPP_LIB_DIR
 	com.fasterxml.jackson.dataformat:jackson-dataformat-cbor@WEBAPP_LIB_DIR
