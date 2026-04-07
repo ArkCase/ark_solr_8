@@ -44,6 +44,7 @@ ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}${FIPS}:${BASE_VER_PFX}${BASE_VER}"
 
 FROM "${BASE_IMG}"
 
+ARG FIPS
 ARG ARCH
 ARG OS
 ARG PKG
@@ -78,6 +79,7 @@ LABEL ORG="ArkCase LLC" \
 
 ENV HOME_DIR="${BASE_DIR}/${PKG}"
 ENV SERVER_DIR="${HOME_DIR}/server"
+ENV SERVER_LIB_DIR="${SERVER_DIR}/lib"
 ENV WEBAPP_DIR="${SERVER_DIR}/solr-webapp/webapp"
 ENV WEBAPP_LIBS_DIR="${WEBAPP_DIR}/WEB-INF/lib"
 
@@ -134,6 +136,9 @@ RUN rm -rf /tmp/* && \
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
+
+RUN export APP_LIB_DIRS="${SERVER_LIB_DIR}:${WEBAPP_LIBS_DIR}" && deploy-fips-crypto
+
 RUN apply-fixes /CVE
 
 USER "${APP_USER}"
