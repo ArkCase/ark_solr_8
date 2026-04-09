@@ -137,8 +137,6 @@ RUN rm -rf /tmp/* && \
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
 
-RUN export APP_LIB_DIRS="${SERVER_LIB_DIR}:${WEBAPP_LIBS_DIR}" && deploy-fips-crypto
-
 RUN apply-fixes /CVE
 
 USER "${APP_USER}"
