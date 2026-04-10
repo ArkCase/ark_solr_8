@@ -136,7 +136,6 @@ RUN rm -rf /tmp/* && \
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
-
 RUN apply-fixes /CVE
 
 USER "${APP_USER}"
