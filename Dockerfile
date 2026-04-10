@@ -22,6 +22,10 @@ ARG JAVA="21"
 
 ARG KEYS="https://downloads.apache.org/solr/KEYS"
 ARG SRC="https://archive.apache.org/dist/solr/solr/${VER}/solr-${VER}.tgz"
+ARG JETTY_VER="12.0.32"
+ARG JETTY_GROUP="org.eclipse.jetty"
+ARG JETTY_ALPN_BC_SERVER_SRC="${JETTY_GROUP}:jetty-alpn-bouncycastle-server:${JETTY_VER}"
+ARG JETTY_ALPN_BC_CLIENT_SRC="${JETTY_GROUP}:jetty-alpn-bouncycastle-client:${JETTY_VER}"
 
 ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
 ARG BASE_REPO="arkcase/base-java"
@@ -43,6 +47,8 @@ ARG APP_UID="2000"
 ARG APP_GID="${APP_UID}"
 ARG APP_USER="${PKG}"
 ARG APP_GROUP="${APP_USER}"
+ARG JETTY_ALPN_BC_SERVER_SRC
+ARG JETTY_ALPN_BC_CLIENT_SRC
 
 RUN set-java "${JAVA}" && \
     apt-get -y install \
@@ -87,6 +93,10 @@ RUN verified-download --keys "${KEYS}" "${SRC}" "/solr.tar.gz" && \
 #
 # Add extra stuff & fix permissions
 #
+# These are necessary for BouncyCastle support
+RUN mvn-get "${JETTY_ALPN_BC_SERVER_SRC}" "${SERVER_LIB_DIR}" && \
+    mvn-get "${JETTY_ALPN_BC_CLIENT_SRC}" "${WEBAPP_LIBS_DIR}"
+
 RUN mkdir -p "${LOGS_DIR}" && \
     chown -R "${APP_USER}:${APP_GROUP}" "${HOME_DIR}" "${DATA_DIR}" && \
     chmod -R u=rwX,g=rwX,o= "${HOME_DIR}" "${DATA_DIR}"
@@ -109,9 +119,6 @@ RUN rm -rf /tmp/* && \
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
-
-RUN export APP_LIB_DIRS="${SERVER_LIB_DIR}:${WEBAPP_LIBS_DIR}" && deploy-fips-crypto
-
 RUN apply-fixes /CVE
 
 USER "${APP_USER}"
