@@ -114,8 +114,6 @@ RUN rm -rf /tmp/* && \
     chmod -R "u=rwX,g=rX,o=" "${BASE_DIR}" && \
     chown root "${HOME_DIR}/bin"
 
-# RUN export APP_LIB_DIRS="${SERVER_EXT_DIR}:${WEBAPP_LIB_DIR}" && \
-#     deploy-fips-jars && \
 RUN mvn-get "${JETTY_ALPN_BC_SERVER_SRC}" "${SERVER_LIB_DIR}" && \
     mvn-get "${JETTY_ALPN_BC_CLIENT_SRC}" "${WEBAPP_LIB_DIR}"
 
