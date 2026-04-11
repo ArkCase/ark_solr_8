@@ -65,8 +65,9 @@ LABEL ORG="ArkCase LLC" \
 ENV HOME_DIR="${BASE_DIR}/${PKG}"
 ENV SERVER_DIR="${HOME_DIR}/server"
 ENV SERVER_LIB_DIR="${SERVER_DIR}/lib"
+ENV SERVER_EXT_DIR="${SERVER_LIB_DIR}/ext"
 ENV WEBAPP_DIR="${SERVER_DIR}/solr-webapp/webapp"
-ENV WEBAPP_LIBS_DIR="${WEBAPP_DIR}/WEB-INF/lib"
+ENV WEBAPP_LIB_DIR="${WEBAPP_DIR}/WEB-INF/lib"
 
 ENV APP_UID="${APP_UID}" \
     APP_GID="${APP_GID}" \
@@ -93,10 +94,6 @@ RUN verified-download --keys "${KEYS}" "${SRC}" "/solr.tar.gz" && \
 #
 # Add extra stuff & fix permissions
 #
-# These are necessary for BouncyCastle support
-RUN mvn-get "${JETTY_ALPN_BC_SERVER_SRC}" "${SERVER_LIB_DIR}" && \
-    mvn-get "${JETTY_ALPN_BC_CLIENT_SRC}" "${WEBAPP_LIBS_DIR}"
-
 RUN mkdir -p "${LOGS_DIR}" && \
     chown -R "${APP_USER}:${APP_GROUP}" "${HOME_DIR}" "${DATA_DIR}" && \
     chmod -R u=rwX,g=rwX,o= "${HOME_DIR}" "${DATA_DIR}"
@@ -116,6 +113,11 @@ RUN rm -rf /tmp/* && \
     chown -R "${APP_USER}:${APP_GROUP}" "${BASE_DIR}" && \
     chmod -R "u=rwX,g=rX,o=" "${BASE_DIR}" && \
     chown root "${HOME_DIR}/bin"
+
+# RUN export APP_LIB_DIRS="${SERVER_EXT_DIR}:${WEBAPP_LIB_DIR}" && \
+#     deploy-fips-jars && \
+RUN mvn-get "${JETTY_ALPN_BC_SERVER_SRC}" "${SERVER_LIB_DIR}" && \
+    mvn-get "${JETTY_ALPN_BC_CLIENT_SRC}" "${WEBAPP_LIB_DIR}"
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
