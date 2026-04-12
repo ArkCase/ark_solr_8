@@ -134,6 +134,11 @@ RUN rm -rf /tmp/* && \
     chmod -R "u=rwX,g=rX,o=" "${BASE_DIR}" && \
     chown root "${HOME_DIR}/bin"
 
+# IMPORTANT!! This allows the OLD Solr (8.11.4) to run with the NEW
+# FIPS-centric builds by turning off the unsupported FIPS stuff
+RUN --mount=type=bind,target=/java.security,source=java.security \
+    tar -C /java.security --owner=0 --group=0 --no-same-owner --no-same-permissions -cf - . | tar -C / --no-overwrite-dir -xvf -
+
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
 RUN apply-fixes /CVE
