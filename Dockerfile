@@ -12,6 +12,7 @@
 #
 ###########################################################################################################
 
+ARG FIPS=""
 ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG ARCH="amd64"
 ARG OS="linux"
@@ -39,10 +40,11 @@ ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
 ARG BASE_REPO="arkcase/base-java"
 ARG BASE_VER="24.04"
 ARG BASE_VER_PFX=""
-ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}:${BASE_VER_PFX}${BASE_VER}"
+ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}${FIPS}:${BASE_VER_PFX}${BASE_VER}"
 
 FROM "${BASE_IMG}"
 
+ARG FIPS
 ARG ARCH
 ARG OS
 ARG PKG
@@ -77,6 +79,7 @@ LABEL ORG="ArkCase LLC" \
 
 ENV HOME_DIR="${BASE_DIR}/${PKG}"
 ENV SERVER_DIR="${HOME_DIR}/server"
+ENV SERVER_LIB_DIR="${SERVER_DIR}/lib"
 ENV WEBAPP_DIR="${SERVER_DIR}/solr-webapp/webapp"
 ENV WEBAPP_LIBS_DIR="${WEBAPP_DIR}/WEB-INF/lib"
 
@@ -130,6 +133,11 @@ RUN rm -rf /tmp/* && \
     chown -R "${APP_USER}:${APP_GROUP}" "${BASE_DIR}" && \
     chmod -R "u=rwX,g=rX,o=" "${BASE_DIR}" && \
     chown root "${HOME_DIR}/bin"
+
+# IMPORTANT!! This allows the OLD Solr (8.11.4) to run with the NEW
+# FIPS-centric builds by turning off the unsupported FIPS stuff
+RUN --mount=type=bind,target=/java.security,source=java.security \
+    tar -C /java.security --owner=0 --group=0 --no-same-owner --no-same-permissions -cf - . | tar -C / --no-overwrite-dir -xvf -
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
 COPY --chown=root:root --chmod=0755 CVE /CVE
