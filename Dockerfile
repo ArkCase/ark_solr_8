@@ -140,8 +140,7 @@ RUN --mount=type=bind,target=/java.security,source=java.security \
     tar -C /java.security --owner=0 --group=0 --no-same-owner --no-same-permissions -cf - . | tar -C / --no-overwrite-dir -xvf -
 
 COPY --chown=root:root --chmod=0755 fix-jar-sum /usr/local/bin/
-COPY --chown=root:root --chmod=0755 CVE /CVE
-RUN apply-fixes /CVE
+RUN --mount=type=bind,source=CVE,target=/CVE apply-fixes /CVE
 
 USER "${APP_USER}"
 WORKDIR "${HOME_DIR}"
