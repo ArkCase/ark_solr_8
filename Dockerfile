@@ -108,7 +108,8 @@ RUN verified-download --keys "${KEYS}" "${SRC}" "/solr.tar.gz" && \
 #
 # Add extra stuff & fix permissions
 #
-RUN mkdir -p "${LOGS_DIR}" && \
+RUN --mount=type=secret,id=mvn_get_auth \
+    . /run/secrets/mvn_get_auth && \
     mvn-get "${MYSQL_DRIVER_SRC}" "${WEBAPP_LIBS_DIR}" && \
     mvn-get "${MYSQL_LEGACY_DRIVER_SRC}" "${MYSQL_LEGACY_DRIVER_REPO}" "${WEBAPP_LIBS_DIR}" && \
     mvn-get "${MARIADB_DRIVER_SRC}" "${WEBAPP_LIBS_DIR}" && \
