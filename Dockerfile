@@ -21,6 +21,7 @@ ARG VER="8.11.4"
 ARG JAVA="11"
 
 ARG KEYS="https://downloads.apache.org/lucene/KEYS"
+ARG SIGNER="@apache[.]org$"
 ARG SRC="https://downloads.apache.org/lucene/solr/${VER}/solr-${VER}.tgz"
 ARG MARIADB_DRIVER="3.1.2"
 ARG MARIADB_DRIVER_SRC="org.mariadb.jdbc:mariadb-java-client:${MARIADB_DRIVER}:jar"
@@ -51,6 +52,7 @@ ARG PKG
 ARG VER
 ARG JAVA
 ARG KEYS
+ARG SIGNER
 ARG SRC
 ARG APP_UID="2000"
 ARG APP_GID="${APP_UID}"
@@ -101,7 +103,7 @@ RUN groupadd --system --gid "${APP_GID}" "${APP_GROUP}" && \
 #
 # Install Solr
 #
-RUN verified-download --keys "${KEYS}" "${SRC}" "/solr.tar.gz" && \
+RUN verified-download --keys "${KEYS}" --signer "${SIGNER}" "${SRC}" "/solr.tar.gz" && \
     tar --strip-components=1 -C "${HOME_DIR}" -xzvf "/solr.tar.gz" && \
     rm -rf "/solr.tar.gz"
 
