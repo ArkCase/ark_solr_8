@@ -151,5 +151,3 @@ WORKDIR "${HOME_DIR}"
 EXPOSE 8983
 
 VOLUME [ "${DATA_DIR}" ]
-
-ENTRYPOINT [ "${HOME_DIR}/bin/solr", "start", "-f", "-cloud" ]
